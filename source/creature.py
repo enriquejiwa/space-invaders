@@ -72,23 +72,36 @@ class Alien(Creature):
     """
     sprite_coord = {0: (1, 1), 1: (19, 1), 2: (37, 1),
                     3: (1, 11), 4: (19, 11), 5: (37, 11)}
+    
+    sprites = []
 
     def __init__(self, x_coord: int, y_coord: int, style: int, right_limit: int):
         super().__init__(x_coord, y_coord, 0.1, 0, x_coord, right_limit)
-        self.set_image(style)
+        if not self.sprites:
+            self.set_sprites()
+        self.style = style
+        self.set_image()
 
-    def set_image(self, style: int):
+    def set_image(self):
         """Sets the sprite of the player, uses the sprites.png file.
 
         Args:
             style (int): The version on the sprite.
         """
+        self.image = self.sprites[self.style]
+
+    def set_sprites(self):
         img = pygame.image.load("assets/sprites.png").convert()
-        img = img.subsurface((*self.sprite_coord[style], 16, 8))
-        self.image = pygame.transform.scale(img, (48, 24))
+        for i in range(6):
+            temp = img.subsurface((*self.sprite_coord[i], 16, 8))
+            temp = pygame.transform.scale(temp, (48, 24))
+            self.sprites.append(temp)
 
     def move(self):
         super().move()
         if self.x_coord in (self.left_limit, self.right_limit):
             self.y_coord += 30
             self.x_change *= -1
+        if self.x_coord % 50 < 0.1:
+            self.style = (self.style+3) % 6
+            self.set_image()
