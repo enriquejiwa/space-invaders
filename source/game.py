@@ -10,7 +10,7 @@ class Game():
 
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((700, 800))
+        self.screen = pygame.display.set_mode((800, 800))
         self.set_window_settings()
         self.running = True
         self.player = creature.Player()
@@ -53,6 +53,8 @@ class Game():
         while self.running:
             self.event_loop()
             self.player.move()
+            for enemy in self.enemies:
+                enemy.move()
             self.draw()
 
     def create_enemies(self):
@@ -60,21 +62,22 @@ class Game():
         """
         y_coord = 100
         for style in range(6):
-            x_coord = 75
+            x_coord = 25
             for _ in range(11):
-                self.enemies.append(creature.Alien(x_coord, y_coord, style//2))
+                self.enemies.append(creature.Alien(x_coord, y_coord,
+                                                   style//2, x_coord+200))
                 x_coord += 50
-            y_coord += 40
+            y_coord += 30
 
     def action(self):
         """Set the change of the player depending on the key pressed.
         """
         change = 0
         if self.keys[pygame.K_LEFT] or self.keys[pygame.K_a]:
-            change = -0.2
+            change = -0.3
         if self.keys[pygame.K_RIGHT] or self.keys[pygame.K_d]:
             if change:
                 change = 0
             else:
-                change = +0.2
+                change = +0.3
         self.player.set_change(change, 0)
