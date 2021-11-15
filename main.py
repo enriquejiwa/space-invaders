@@ -1,5 +1,4 @@
-"""[summary]
-"""
+# pylint: skip-file
 import pygame
 import random
 import math
