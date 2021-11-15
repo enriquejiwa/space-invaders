@@ -16,6 +16,7 @@ class Game():
         self.player = creature.Player()
         self.enemies = []
         self.create_enemies()
+        self.keys = pygame.key.get_pressed()
 
     def set_window_settings(self):
         """Sets the window information, the caption and icon.
@@ -30,6 +31,12 @@ class Game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+            elif event.type == pygame.KEYDOWN:
+                self.keys = pygame.key.get_pressed()
+                self.action()
+            elif event.type == pygame.KEYUP:
+                self.keys = pygame.key.get_pressed()
+                self.action()
 
     def draw(self):
         """Fills and updates the screen with all the objects.
@@ -45,6 +52,7 @@ class Game():
         """
         while self.running:
             self.event_loop()
+            self.player.move()
             self.draw()
 
     def create_enemies(self):
@@ -57,3 +65,16 @@ class Game():
                 self.enemies.append(creature.Alien(x_coord, y_coord, style//2))
                 x_coord += 50
             y_coord += 40
+
+    def action(self):
+        """Set the change of the player depending on the key pressed.
+        """
+        change = 0
+        if self.keys[pygame.K_LEFT] or self.keys[pygame.K_a]:
+            change = -0.2
+        if self.keys[pygame.K_RIGHT] or self.keys[pygame.K_d]:
+            if change:
+                change = 0
+            else:
+                change = +0.2
+        self.player.set_change(change, 0)

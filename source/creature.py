@@ -26,6 +26,26 @@ class Creature():
         if self.image:
             screen.blit(self.image, (self.x_coord, self.y_coord))
 
+    def set_change(self, x_change: int, y_change: int):
+        """Set the values to change when the creature moves.
+
+        Args:
+            x_change (int): Movement on the x axis.
+            y_change (int): Movement on the y axis.
+        """
+        self.x_change = x_change
+        self.y_change = y_change
+
+    def move(self):
+        """Change the position coordinates using the change value.
+        """
+        self.x_coord += self.x_change
+        self.y_coord += self.y_change
+        if self.x_coord < 75:
+            self.x_coord = 75
+        elif self.x_coord > 625:
+            self.x_coord = 625
+
 
 class Player(Creature):
     """Class that corresponds to the player, inherits from Creature.
