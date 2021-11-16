@@ -76,13 +76,12 @@ class Creature():
         self.health -= 1
 
 
-
 class Player(Creature):
     """Class that corresponds to the player, inherits from Creature.
     """
 
     def __init__(self):
-        super().__init__(350, 700, 0, 0, 25, 725)
+        super().__init__(350, 675, 0, 0, 25, 725)
         self.set_image()
         self.health = 3
 
@@ -135,7 +134,7 @@ class Alien(Creature):
         if self.x_coord in (self.left_limit, self.right_limit):
             self.y_coord += 30
             self.x_change *= -1
-        if self.x_coord % 50 < 0.05:
+        if self.x_coord % 25 < 0.05:
             self.style = (self.style+3) % 6
             self.set_image()
         if not random.randint(0, 25000):

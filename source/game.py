@@ -10,7 +10,7 @@ class Game():
     score_coords = [(21, 89), (21, 69), (61, 79), (11, 89), (41, 69)]
     score = []
     game_over_coords = [(61, 69), (1, 69), (41, 79), (41, 69), (61, 79),
-    (51, 89), (41, 69), (11, 89)]
+                        (51, 89), (41, 69), (11, 89)]
     over = []
     numbers_coords = [(21, 99), (31, 99), (41, 99), (51, 99), (61, 99),
                       (71, 99), (1, 109), (11, 109), (21, 109), (31, 109)]
@@ -28,6 +28,7 @@ class Game():
         self.score_value = 0
         self.set_score()
         self.set_game_over()
+        self.ended = False
 
     def set_window_settings(self):
         """Sets the window information, the caption and icon.
@@ -55,6 +56,7 @@ class Game():
         self.screen.fill((0, 0, 0))
         self.show_score()
         self.player.show(self.screen)
+        self.show_heath()
         for enemy in self.enemies:
             if enemy:
                 enemy.show(self.screen)
@@ -65,13 +67,18 @@ class Game():
         """
         while self.running:
             self.event_loop()
-            self.player.move()
-            for enemy in self.enemies:
-                if enemy:
-                    enemy.move()
-            self.check_collision()
-            if self.player.health > 0 and self.score_value < 660:
-                self.draw()
+            if not self.ended:
+                self.player.move()
+                for enemy in self.enemies:
+                    if enemy:
+                        enemy.move()
+                        if enemy.y_coord >= 675:
+                            self.ended = True
+                self.check_collision()
+                if self.player.health > 0 and self.score_value < 660:
+                    self.draw()
+                else:
+                    self.ended = True
             else:
                 self.game_over()
 
@@ -126,7 +133,7 @@ class Game():
             self.numbers.append(temp)
 
     def show_score(self):
-        """Shows the score of the player
+        """Shows the score of the player.
         """
         x_coord = 10
         for letter in self.score:
@@ -136,9 +143,9 @@ class Game():
         x_coord += 25
         for i in range(3, -1, -1):
             self.screen.blit(self.numbers[temp//(10**i)], (x_coord, 10))
-            temp  %= 10**i
+            temp %= 10**i
             x_coord += 25
-    
+
     def set_game_over(self):
         """Loads the sprites of GAMEOVER.
         """
@@ -149,7 +156,7 @@ class Game():
             self.over.append(temp)
 
     def game_over(self):
-        """Shows the game over screen
+        """Shows the game over screen.
         """
         self.screen.fill((0, 0, 0))
         x_coord = 120
@@ -157,3 +164,11 @@ class Game():
             self.screen.blit(letter, (x_coord, 320))
             x_coord += 70
         pygame.display.update()
+
+    def show_heath(self):
+        """Shows the health of the player.
+        """
+        x_coord = 100
+        for _ in range(self.player.health):
+            self.screen.blit(self.player.image, (x_coord, 750))
+            x_coord += 50
