@@ -1,6 +1,6 @@
 <p align="center">
   <img src="https://github.com/enriquejiwa/space-invaders/blob/main/assets/icon.png">
-  <h2 align="center" style="margin-top: -4px !important;">space-invaders</h2>
+  <h1 align="center">space-invaders</h2>
   <p align="center">
     <a href="https://github.com/enriquejiwa/space-invaders/blob/main/LICENSE">
       <img src="https://img.shields.io/badge/license-MIT-informational">
