@@ -1,5 +1,6 @@
 """Module containing the class Creature and its inherited, Player and Alien.
 """
+import random
 import pygame
 
 
@@ -18,6 +19,7 @@ class Creature():
         self.left_limit = left_limit
         self.right_limit = right_limit
         self.bullet = None
+        self.health = 1
 
     def show(self, screen: pygame.Surface):
         """Displays the creature onto the screen at coordinates determined by
@@ -27,7 +29,7 @@ class Creature():
             screen (pygame.Surface): The surface where the creature will be
             displayed.
         """
-        if self.image:
+        if self.image and self.health:
             screen.blit(self.image, (self.x_coord, self.y_coord))
         if self.bullet and not self.bullet.impact:
             self.bullet.show(screen)
@@ -56,8 +58,23 @@ class Creature():
             self.bullet.move()
 
     def check_bullet_impact(self, target) -> bool:
+        """Checks if the creature's bullet hit the target.
+
+        Args:
+            target (Creature): The target to hit.
+
+        Returns:
+            bool: If the bullet hit
+        """
         if self.bullet and not self.bullet.impact:
             return self.bullet.check_impact(target)
+        return False
+
+    def decrease_health(self):
+        """Decreases the health of the creature by one.
+        """
+        self.health -= 1
+
 
 
 class Player(Creature):
@@ -67,6 +84,7 @@ class Player(Creature):
     def __init__(self):
         super().__init__(350, 700, 0, 0, 25, 725)
         self.set_image()
+        self.health = 3
 
     def set_image(self):
         """Sets the sprite of the player, uses the sprites.png file.
@@ -120,17 +138,29 @@ class Alien(Creature):
         if self.x_coord % 50 < 0.05:
             self.style = (self.style+3) % 6
             self.set_image()
+        if not random.randint(0, 25000):
+            self.shoot()
+
+    def shoot(self):
+        """Generates a bullet and saves it as attribute.
+        """
+        if not self.bullet or self.bullet.impact:
+            self.bullet = Bullet(self.x_coord + 21, self.y_coord + 24,
+                                 random.choice([1, 2]))
 
 
 class Bullet(Creature):
     """Class that corresponds to the bullets, inherits from Creature.
     """
-    sprite_coord = {0: (41, 21), 1: (1, 21), -1: (11, 21)}
+    sprite_coord = {0: (41, 21), 1: (1, 21), 2: (11, 21)}
 
     sprites = {}
 
     def __init__(self, x_coord: int, y_coord: int, style: int):
-        super().__init__(x_coord, y_coord, 0, -0.4, 0, 800)
+        if not style:
+            super().__init__(x_coord, y_coord, 0, -0.4, 0, 800)
+        else:
+            super().__init__(x_coord, y_coord, 0, +0.4, 0, 800)
         self.impact = False
         if not self.sprites:
             self.set_sprites()
@@ -158,9 +188,18 @@ class Bullet(Creature):
             self.impact = True
 
     def check_impact(self, target) -> bool:
+        """Checks if the bullet hit the target.
+
+        Args:
+            target (Creature): The target to hit
+
+        Returns:
+            bool: If the bullet hit.
+        """
         if (self.x_coord - target.x_coord <= 39 and
             self.x_coord - target.x_coord >= 0 and
             self.y_coord - target.y_coord <= 24 and
                 self.y_coord - target.y_coord >= 0):
             self.impact = True
+            target.decrease_health()
             return True
