@@ -44,7 +44,8 @@ class Game():
         self.screen.fill((0, 0, 0))
         self.player.show(self.screen)
         for enemy in self.enemies:
-            enemy.show(self.screen)
+            if enemy:
+                enemy.show(self.screen)
         pygame.display.update()
 
     def start(self):
@@ -54,7 +55,9 @@ class Game():
             self.event_loop()
             self.player.move()
             for enemy in self.enemies:
-                enemy.move()
+                if enemy:
+                    enemy.move()
+            self.check_collision()
             self.draw()
 
     def create_enemies(self):
@@ -81,3 +84,10 @@ class Game():
             else:
                 change = +0.3
         self.player.set_change(change, 0)
+        if self.keys[pygame.K_SPACE]:
+            self.player.shoot()
+
+    def check_collision(self):
+        for index, enemy in enumerate(self.enemies):
+            if enemy and self.player.check_bullet_impact(enemy):
+                self.enemies[index] = None
